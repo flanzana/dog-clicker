@@ -17,8 +17,8 @@ dogs.forEach(function(dog) {
 
 	// We're creating a DOM element for the dog
 	var elem = document.createElement('li');
-	elem.innerHTML = (`<img src='img/${dog}.jpg' alt=${dog} height=100px><p>${dog}</p>`);
-	// inside menu is 5x elem <li><img src='img/xxxx.jpg' alt="xxxx" height=100px id="xxxx"><p>xxxx</p></li>
+	elem.innerHTML = (`${dog}`);
+	// inside menu is 5x elem <li>xxnameofdogxx</li>
 	menu.appendChild(elem);
 
 	//function to display selected dog in deck
