@@ -1,81 +1,138 @@
-const dogList = ['Capi', 'Tedi', 'Maks', 'Floki', 'Reksi'];
-let dogs = dogList;
+let model = {
+	//none dog is selected by default
+	currentDog: null,
 
-const menu = document.querySelector('.dog-list');
+	//list of my dogs
+	dogs: [
+		{
+			name: 'Capi',
+			imgSrc: 'img/Capi.jpg',
+			clickCount: 0
+		},
+		{
+			name: 'Tedi',
+			imgSrc: 'img/Tedi.jpg',
+			clickCount: 0
+		},
+		{
+			name: 'Maks',
+			imgSrc: 'img/Maks.jpg',
+			clickCount: 0
+		},
+		{
+			name: 'Floki',
+			imgSrc: 'img/Floki.jpg',
+			clickCount: 0
+		},
+		{
+			name: 'Reksi',
+			imgSrc: 'img/Reksi.jpg',
+			clickCount: 0
+		}
+	]
+}; // end of model
 
-const deck = document.querySelector('.div-dog');
 
+let octopus = {
+	init: function() {
+		//set current dog
+		model.currentDog = model.dogs[0];
 
-// clear the screen for testing
-deck.innerHTML = '';
+		//initialize both views
+		viewDogList.init();
+		viewDogDisplay.init();
+	},
 
-// Let's loop over the numbers in our array
-dogs.forEach(function(dog) {
-	// This is the dog we're on...
-	//dog is already defined as function(dog)
-	//console.log(dog);
+	getCurrentDog: function() {
+		return model.currentDog;
+	},
 
-	// We're creating a DOM element for the dog
-	var elem = document.createElement('li');
-	elem.innerHTML = (`${dog}`);
-	// inside menu is 5x elem <li>xxnameofdogxx</li>
-	menu.appendChild(elem);
+	getDogs: function() {
+		return model.dogs;
+	},
 
-	//function to display selected dog in deck
-	function displaySelectedDog() {
-		$(deck).append(`<h2>${dog}</h2>
-					<img class='photodog' src='img/${dog}.jpg' alt="Puppy" id="${dog}"><br>
-					Clicks: <span id='click${dog}'></span>`);
+	// set the currently-selected dog to the object passed in
+	setCurrentDog: function(dog) {
+		model.currentDog = dog;
+	},
+
+	// increments the counter for the currently-selected dog
+	incrementCounter: function() {
+		model.currentDog.clickCount++;
+		viewDogDisplay.render();
 	}
-
-	// when we click a dog in menu, display a dog name in deck
-	elem.addEventListener('click', (function(dogCopy) {
-		return function() {
-			if (deck.innerHTML === '') {
-				displaySelectedDog();
-			} else {
-				deck.innerHTML = '';
-				displaySelectedDog();
-			}
-		};
-	})(dog));
-});
+}; // end of octopus
 
 
-// when we click a dog in deck, countclick should change for +1
-//let selectedDog = $('.div-dog').children('img');
+let viewDogList = {
+	init: function() {
+		// store the DOM element for easy access later
+		this.dogListElem = document.getElementById('dog-list');
 
-let numCapi = 0;
-let numTedi = 0;
-let numMaks = 0;
-let numFloki = 0;
-let numReksi = 0;
+		// update the DOM elements with the right values
+		this.render();
+	},
 
-deck.addEventListener('click', function() {
-	// reads attribute id='click${dog} of clicked dog'
-	// help: https://stackoverflow.com/questions/4740297/get-attribute-of-child-element
-	let atr = $(this).children('span').attr('id');
-	//console.log(atr); //atr = clickCapi
-	//this prints correct value (each dog has correct name)
+	render: function() {
+		let dog, elem, i;
+		// get the dogs from octopus
+		let dogs = octopus.getDogs();
 
-	if (atr == 'clickCapi') {
-		numCapi+=1;
-		document.getElementById(atr).innerHTML = numCapi;
-		
-	} else if (atr == 'clickTedi') {
-		numTedi+=1;
-		document.getElementById(atr).innerHTML = numTedi;
+		// empty dog list
+		this.dogListElem.innerHTML = '';
 
-	} else if (atr == 'clickMaks') {
-		numMaks+=1;
-		document.getElementById(atr).innerHTML = numMaks;
+		// loop over dogs
+		//for (i = 0; i < dogs.length; i++) {
+		for (dog of dogs) {
+			//dog = dogs[i];
 
-	} else if (atr == 'clickFloki') {
-		numFloki+=1;
-		document.getElementById(atr).innerHTML = numFloki;
+			// create "buttons" and write the name of dog
+			elem = document.createElement('li');
+			elem.textContent = dog.name;
 
-	} else if (atr == 'clickReksi') {
-		numReksi+=1;
-		document.getElementById(atr).innerHTML = numReksi;
+			// set current dog on click (using closure-in-a-loop to connect the value of the dog variable to the click event function)
+			elem.addEventListener('click', (function(dogCopy) {
+				return function() {
+					octopus.setCurrentDog(dogCopy);
+					viewDogDisplay.render();
+				};
+			})(dog));
+
+			// finally, add element to the list
+			this.dogListElem.appendChild(elem);
+
+		}
 	}
-});
+}; // end of viewList
+
+
+let viewDogDisplay = {
+	//
+	init: function() {
+		// store atributes of selected dog to DOM elements for easy access later
+		this.dogElem = document.getElementById('dog-display');
+		this.dogNameElem = document.getElementById('dog-name');
+		this.dogImgElem = document.getElementById('dog-img');
+		this.countElem = document.getElementById('dog-count');
+
+		//increment counter on click
+		this.dogImgElem.addEventListener('click', function() {
+			octopus.incrementCounter();
+		});
+
+		//update DOM elements with the right values
+		this.render();
+	},
+
+	render: function() {
+		//update DOM elements with values from the current dog
+		let currentDog = octopus.getCurrentDog();
+		this.countElem.textContent = currentDog.clickCount;
+		this.dogNameElem.textContent = currentDog.name;
+		this.dogImgElem.src = currentDog.imgSrc;
+	}
+}; // end of viewDogDisplay
+
+
+//load the functions
+octopus.init();

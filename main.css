@@ -16,12 +16,15 @@ aside {
 
 li {
 	list-style: none;
-	background-color: #c8c8c8;
+	background-color: #deb887;
 	padding: 10px;
 	margin: 10px;
 	text-align: center;
 }
 
+li:hover {
+	background-color: #f5deb3;
+}
 
 /* ------------- MAIN ----------------*/
 main {
@@ -29,7 +32,7 @@ main {
 	text-align: center;
 }
 
-.div-dog {
+.dog-display {
 	width: 310px;
 	margin: 0 auto;
 }
